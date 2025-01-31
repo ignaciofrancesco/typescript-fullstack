@@ -34,14 +34,14 @@ const parseBmiArguments = (args: string[]): BmiInputs => {
     throw new Error("Too many arguments.");
   }
 
-  const [tsnode, bmiCalculator, height, weight] = args;
+  const [_tsnode, _bmiCalculator, height, weight] = args;
 
   // Validate they are numbers
   if (isNaN(Number(height)) || isNaN(Number(weight))) {
     throw new Error("You should provide numbers.");
   }
 
-  // Validate they are not zero
+  // Validate theye are not zero
   if (Number(height) <= 0 || Number(weight) <= 0) {
     throw new Error("You should provide positive numbers.");
   }
