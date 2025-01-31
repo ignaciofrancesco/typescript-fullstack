@@ -1,9 +1,4 @@
-// bmi: weight / height^2
-// kg and meters
-
-/* Major adult BMI classifications are underweight (under 18.5 kg/m2),
- normal weight (18.5 to 24.9), overweight (25 to 29.9), and obese (30 or more).[1] */
-
+/* Main function */
 const calculateBmi = (heightCm: number, weight: number): string => {
   let message: string;
 
@@ -24,4 +19,45 @@ const calculateBmi = (heightCm: number, weight: number): string => {
   return message;
 };
 
-console.log(calculateBmi(180, 74));
+/* Helpers */
+
+interface BmiInputs {
+  weight: number;
+  heightCm: number;
+}
+
+const parseBmiArguments = (args: string[]): BmiInputs => {
+  // Validate number of arguments
+  if (args.length < 4) {
+    throw new Error("Too few arguments.");
+  } else if (args.length > 4) {
+    throw new Error("Too many arguments.");
+  }
+
+  const [tsnode, bmiCalculator, height, weight] = args;
+
+  // Validate they are numbers
+  if (isNaN(Number(height)) || isNaN(Number(weight))) {
+    throw new Error("You should provide numbers.");
+  }
+
+  // Validate they are not zero
+  if (Number(height) <= 0 || Number(weight) <= 0) {
+    throw new Error("You should provide positive numbers.");
+  }
+
+  return { weight: Number(weight), heightCm: Number(height) };
+};
+
+/* MAIN PROGRAM */
+
+try {
+  const { heightCm, weight } = parseBmiArguments(process.argv);
+
+  console.log(calculateBmi(heightCm, weight));
+} catch (error: unknown) {
+  let errorMessage = "Something went wrong: ";
+  if (error instanceof Error) {
+    console.log(errorMessage + error.message);
+  }
+}

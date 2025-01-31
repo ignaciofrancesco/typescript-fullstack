@@ -11,8 +11,8 @@ interface ExercisesResult {
 }
 
 const calculateExercises = (
-  hoursPerDay: number[],
-  dailyHoursTarget: number
+  dailyHoursTarget: number,
+  hoursPerDay: number[]
 ): ExercisesResult => {
   const descriptions = ["Terrible job", "Almost there", "Great job!"];
 
@@ -28,8 +28,7 @@ const calculateExercises = (
   const rating: Rating = average >= target ? 3 : average / target > 0.8 ? 2 : 1;
   const ratingDescription = descriptions[rating - 1];
 
-  // Result element
-  const result = {
+  return {
     periodLength,
     trainingDays,
     success,
@@ -38,8 +37,59 @@ const calculateExercises = (
     target,
     average,
   };
-
-  return result;
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+/* Helpers */
+
+interface exerciseInputs {
+  target: number;
+  hoursPerDay: number[];
+}
+
+const parseExcerciseCalculatorArguments = (args: string[]): exerciseInputs => {
+  // Validate number of arguments (at least 4, and max 30)
+  if (args.length < 4) {
+    throw new Error("Too few arguments.");
+  } else if (args.length > 30) {
+    throw new Error("Too many arguments.");
+  }
+
+  const [tsnode, bmiCalculator, target, ...hoursPerDay] = args;
+
+  // Type validations
+
+  if (isNaN(Number(target))) {
+    throw new Error("The hours should be numbers.");
+  }
+
+  const hoursPerDayAsNumbers = hoursPerDay.map((h) => {
+    if (isNaN(Number(h))) {
+      throw new Error("The hours should be numbers.");
+    }
+
+    return Number(h);
+  });
+
+  // Math validations
+
+  if (Number(target) <= 0) {
+    throw new Error("The target should be a positive number.");
+  }
+
+  return { target: Number(target), hoursPerDay: hoursPerDayAsNumbers };
+};
+
+/* MAIN PROGRAM */
+
+try {
+  const { target, hoursPerDay } = parseExcerciseCalculatorArguments(
+    process.argv
+  );
+
+  console.log(calculateExercises(target, hoursPerDay));
+} catch (error: unknown) {
+  let errorMessage = "Something went wrong: ";
+  if (error instanceof Error) {
+    console.log(errorMessage + error.message);
+  }
+}
