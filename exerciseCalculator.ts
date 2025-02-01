@@ -54,7 +54,7 @@ const parseExcerciseCalculatorArguments = (args: string[]): exerciseInputs => {
     throw new Error("Too many arguments.");
   }
 
-  const [_tsnode, _bmiCalculator, target, ...hoursPerDay] = args;
+  const [, , target, ...hoursPerDay] = args;
 
   // Type validations
 
@@ -90,6 +90,7 @@ try {
 } catch (error: unknown) {
   let errorMessage = "Something went wrong: ";
   if (error instanceof Error) {
-    console.log(errorMessage + error.message);
+    errorMessage += error.message;
   }
+  console.log(errorMessage);
 }

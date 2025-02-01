@@ -20,8 +20,8 @@ interface BmiInputs {
 }
 
 const parseBmiArguments = (args: string[]): BmiInputs => {
-  let height: any;
-  let weight: any;
+  let height: string;
+  let weight: string;
 
   // If it is run from the command line
   if (require.main === module) {
@@ -56,8 +56,9 @@ if (require.main === module) {
   } catch (error: unknown) {
     let errorMessage = "Something went wrong: ";
     if (error instanceof Error) {
-      console.log(errorMessage + error.message);
+      errorMessage += error.message;
     }
+    console.log(errorMessage);
   }
 }
 export default { parseBmiArguments, calculateBmi };

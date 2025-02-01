@@ -1,4 +1,4 @@
-const isPositiveNumber = (n: any): boolean => {
+const isPositiveNumber = (n: string): boolean => {
   // Validate it s a number
   if (isNaN(Number(n))) {
     return false;
