@@ -1,3 +1,79 @@
+import { isNumber, isPositiveNumber } from "./utils/numbersHelper";
+
+/* HELPER FUNCTIONS */
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const validateArguments = (target: any, hoursPerDay: any): void => {
+  // Type validations
+
+  if (!isPositiveNumber(target)) {
+    throw new Error("The target should be a positive number.");
+  }
+
+  if (!Array.isArray(hoursPerDay)) {
+    throw new Error("malformatted parameters");
+  }
+
+  hoursPerDay.forEach((hours) => {
+    if (!isNumber(hours)) {
+      throw new Error("The hours should be numbers.");
+    }
+  });
+
+  // Math validations
+
+  if (Number(target) <= 0) {
+    throw new Error("The target should be a positive number.");
+  }
+
+  // Other validations
+
+  if (hoursPerDay.length < 2) {
+    throw new Error("The daily exercises should have at least 2 days.");
+  }
+};
+
+const parseCommandLineArguments = (args: string[]): ExerciseInputs => {
+  // Validate number of arguments (at least 4, and max 30)
+  if (args.length < 4) {
+    throw new Error("Too few arguments.");
+  } else if (args.length > 30) {
+    throw new Error("Too many arguments.");
+  }
+  const [, , target, ...hoursPerDay] = args;
+
+  // If validation doesnt throw any error, continue
+  validateArguments(target, hoursPerDay);
+
+  const hoursPerDayParsed = hoursPerDay.map((hour) => Number(hour));
+
+  return {
+    targetParsed: Number(target),
+    hoursPerDayParsed,
+  };
+};
+
+const parseWebArguments = (
+  target: unknown,
+  hoursPerDay: unknown
+): ExerciseInputs => {
+  // If not valid, it throws exception
+  validateArguments(target, hoursPerDay);
+
+  // Now the type of the parameters is safe, and i can assert them
+
+  const hoursPerDayParsed = (hoursPerDay as string[]).map((hour) =>
+    Number(hour)
+  );
+
+  return {
+    targetParsed: Number(target),
+    hoursPerDayParsed,
+  };
+};
+
+/* MAIN FUNCTION */
+
 type Rating = 1 | 2 | 3;
 
 interface ExercisesResult {
@@ -41,56 +117,27 @@ const calculateExercises = (
 
 /* Helpers */
 
-interface exerciseInputs {
-  target: number;
-  hoursPerDay: number[];
+interface ExerciseInputs {
+  targetParsed: number;
+  hoursPerDayParsed: number[];
 }
 
-const parseExcerciseCalculatorArguments = (args: string[]): exerciseInputs => {
-  // Validate number of arguments (at least 4, and max 30)
-  if (args.length < 4) {
-    throw new Error("Too few arguments.");
-  } else if (args.length > 30) {
-    throw new Error("Too many arguments.");
-  }
+/* MAIN PROGRAM (to be run in the command line) */
 
-  const [, , target, ...hoursPerDay] = args;
+if (require.main === module) {
+  try {
+    const { targetParsed, hoursPerDayParsed } = parseCommandLineArguments(
+      process.argv
+    );
 
-  // Type validations
-
-  if (isNaN(Number(target))) {
-    throw new Error("The hours should be numbers.");
-  }
-
-  const hoursPerDayAsNumbers = hoursPerDay.map((h) => {
-    if (isNaN(Number(h))) {
-      throw new Error("The hours should be numbers.");
+    console.log(calculateExercises(targetParsed, hoursPerDayParsed));
+  } catch (error: unknown) {
+    let errorMessage = "Something went wrong: ";
+    if (error instanceof Error) {
+      errorMessage += error.message;
     }
-
-    return Number(h);
-  });
-
-  // Math validations
-
-  if (Number(target) <= 0) {
-    throw new Error("The target should be a positive number.");
+    console.log(errorMessage);
   }
-
-  return { target: Number(target), hoursPerDay: hoursPerDayAsNumbers };
-};
-
-/* MAIN PROGRAM */
-
-try {
-  const { target, hoursPerDay } = parseExcerciseCalculatorArguments(
-    process.argv
-  );
-
-  console.log(calculateExercises(target, hoursPerDay));
-} catch (error: unknown) {
-  let errorMessage = "Something went wrong: ";
-  if (error instanceof Error) {
-    errorMessage += error.message;
-  }
-  console.log(errorMessage);
 }
+
+export { calculateExercises, parseCommandLineArguments, parseWebArguments };

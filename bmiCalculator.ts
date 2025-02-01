@@ -1,4 +1,4 @@
-import numbersHelper from "./utils/numbersHelper";
+import { isPositiveNumber } from "./utils/numbersHelper";
 
 /* Main function */
 const calculateBmi = (heightCm: number, weight: number): string => {
@@ -38,10 +38,7 @@ const parseBmiArguments = (args: string[]): BmiInputs => {
     weight = args[1];
   }
 
-  if (
-    !numbersHelper.isPositiveNumber(height) ||
-    !numbersHelper.isPositiveNumber(weight)
-  ) {
+  if (!isPositiveNumber(height) || !isPositiveNumber(weight)) {
     throw new Error("Arguments should be positive numbers.");
   }
 
